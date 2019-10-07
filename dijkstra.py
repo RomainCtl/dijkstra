@@ -1,102 +1,158 @@
 # -*- coding: utf-8 -*-
+import warnings
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
 
 INF = 999999999
 
 
-def dijkstra(M, r):
-    """
-    param:
-        M array numpy matrice
-        r int sommet
+class Dijkstra:
+    M: np.array
+    peak: int
+    dist: list
+    pred: list
 
-    return:
-        two list, distance to go to each peak and predecessor  of each peak
-    """
-    if r >= len(M):
-        raise ValueError(f"Unknown peak ! '{r}'")
-    marked_peak = [r]
-    others_peak = list(range(len(M)))
-    others_peak.remove(r)
+    def __init__(self, M, peak):
+        self.M = M
+        self.peak = peak
+        self.dist = list()
+        self.pred = list()
 
-    dist = list(INF for _ in range(len(M)))
-    pred = list(INF for _ in range(len(M)))
+    def __construct_path(self) -> list:
+        """
+        create full path of predecessor for each peak with 'self.pred' list
+        """
+        res = []
+        for i in range(len(self.pred)):
+            j = self.pred[i]
+            res += [tuple()]
+            if j == -1:
+                continue  # go to next iteration
+            while self.pred[j] != -1:
+                res[i] += (j,)
+                j = self.pred[j]
 
-    for i in range(len(M)):
-        dist[i] = M[r, i]
-        if M[r, i] != INF:
-            pred[i] = r
-        else:
-            pred[i] = -1
+        # add parent peak
+        for i in range(len(self.pred)):
+            if self.dist[i] != INF:
+                res[i] += (peak,)
+                res[i] = res[i][::-1]  # reverse
+                res[i] += (i,)
+        return res
 
-    dist[r] = 0
-    _dist = dist[:]  # copy of dist
-    pred[r] = -1
+    def calc(self) -> None:
+        """
+        this function calc distance from selected peak each others peak
+        and predecessor of the smallest path of each peak
+        with dijkstra algo
+        """
+        if self.peak >= len(self.M):
+            raise ValueError(f"Unknown peak ! '{self.peak}'")
+        marked_peak = [self.peak]
+        others_peak = list(range(len(self.M)))
+        others_peak.remove(self.peak)
 
-    while len(others_peak) != 0:
-        # choose min path
-        tmp = []
-        for i in range(len(M)):
-            if i in marked_peak:
-                tmp += [INF]
+        self.dist = list(INF for _ in range(len(self.M)))
+        self.pred = list(INF for _ in range(len(self.M)))
+
+        for i in range(len(self.M)):
+            self.dist[i] = self.M[self.peak, i]
+            if self.M[self.peak, i] != INF:
+                self.pred[i] = self.peak
             else:
-                tmp += [dist[i]]
-        min_r_dist = _dist.index(sorted(tmp)[0])
-        _dist[min_r_dist] = INF
+                self.pred[i] = -1
 
-        marked_peak += [min_r_dist]
-        if min_r_dist not in others_peak:
-            # no more path
-            break
-        others_peak.remove(min_r_dist)
+        self.dist[self.peak] = 0
+        _dist = self.dist[:]  # copy of dist
+        self.pred[self.peak] = -1
 
-        for p in others_peak:
-            if dist[min_r_dist] + M[min_r_dist, p] < dist[p]:
-                _dist[p] = dist[p] = dist[min_r_dist] + M[min_r_dist, p]
-                pred[p] = min_r_dist
+        while len(others_peak) != 0:
+            # choose min path
+            tmp = []
+            for i in range(len(self.M)):
+                if i in marked_peak:
+                    tmp += [INF]
+                else:
+                    tmp += [self.dist[i]]
+            min_r_dist = _dist.index(sorted(tmp)[0])
+            _dist[min_r_dist] = INF
 
-    return dist, pred
+            marked_peak += [min_r_dist]
+            if min_r_dist not in others_peak:
+                # no more path
+                break
+            others_peak.remove(min_r_dist)
 
+            for p in others_peak:
+                if self.dist[min_r_dist] + self.M[min_r_dist, p] < self.dist[p]:
+                    _dist[p] = self.dist[p] = (
+                        self.dist[min_r_dist] + self.M[min_r_dist, p]
+                    )
+                    self.pred[p] = min_r_dist
 
-def construct_predecessor_path(dist, pred, peak):
-    res = []
-    for i in range(len(pred)):
-        j = pred[i]
-        res += [tuple()]
-        if j == -1:
-            continue  # go to next iteration
-        while pred[j] != -1:
-            res[i] += (j,)
-            j = pred[j]
+        self.pred = self.__construct_path()
 
-    # add parent peak
-    for i in range(len(pred)):
-        if dist[i] != INF:
-            res[i] += (peak,)
-            res[i] = res[i][::-1]  # reverse
-    return res
+    def draw(self) -> None:
+        """
+        draw table with result and network graph of M (matrice)
+        """
+        cells = []
+
+        for i in range(len(self.dist)):
+            if i != self.peak:
+                p = "->".join(map(str, self.pred[i])) or "<aucun>"
+                d = (
+                    "{:^17d}".format(self.dist[i])
+                    if self.dist[i] != INF
+                    else "<infini>"
+                )
+                cells.append(["{:^6d}".format(i), d, p])
+
+        N = self.M[:]
+        N[N == INF] = 0  # replace 'INF' by '0'
+        G = nx.from_numpy_array(N, create_using=nx.DiGraph())
+        pos = nx.circular_layout(G)
+        edge_label = nx.get_edge_attributes(G, "weight")
+
+        fig, (a0, a1) = plt.subplots(2, 1, gridspec_kw={"height_ratios": [1, 1.5]})
+
+        # table
+        a0.axis("off")
+        a0.table(
+            cellText=cells,
+            colLabels=[
+                "Sommet",
+                f"Distance depuis {self.peak}",
+                "Chemin le plus court",
+            ],
+            loc="center",
+        )
+        a0.set_title(f"Sommet de départ : {self.peak}")
+
+        # directed graph
+        warnings.simplefilter("ignore")
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_label, ax=a1)
+        nx.draw_networkx(G, pos, node_size=500, with_labels=True, arrows=True, ax=a1)
+
+        fig.tight_layout()
+        plt.show()
 
 
 if __name__ == "__main__":
     M = np.array(
         [
-            [0, 2, 3, INF, INF, INF, INF],
-            [INF, 0, INF, INF, INF, 10, INF],
-            [INF, 3, 0, INF, INF, INF, INF],
-            [INF, INF, INF, 0, INF, INF, INF],
-            [INF, INF, 2, 5, 0, INF, 1],
-            [INF, INF, 4, 7, 3, 0, 5],
-            [INF, INF, INF, 1, INF, INF, 0],
+            [INF, 2, 3, INF, INF, INF, INF],
+            [INF, INF, INF, INF, INF, 10, INF],
+            [INF, 3, INF, INF, INF, INF, INF],
+            [INF, INF, INF, INF, INF, INF, INF],
+            [INF, INF, 2, 5, INF, INF, 1],
+            [INF, INF, 4, 7, 3, INF, 5],
+            [INF, INF, INF, 1, INF, INF, INF],
         ]
     )
     peak = 0
-    distance, predecessor = dijkstra(M, peak)
-    predecessor = construct_predecessor_path(distance, predecessor, peak)
 
-    print(f"Sommet de départ : {peak}")
-    print(f"Sommet | Distance depuis {peak} | Chemin le plus court")
-    for i in range(len(distance)):
-        if i != peak:
-            p = "->".join(map(str, predecessor[i])) or "<aucun>"
-            d = "{:^17d}".format(distance[i]) if distance[i] != INF else "    <infini>     "
-            print("{:^6d} | {} | {}".format(i, d, p))
+    obj = Dijkstra(M, peak)
+    obj.calc()
+    obj.draw()
