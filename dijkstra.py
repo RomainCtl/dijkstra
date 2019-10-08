@@ -159,20 +159,4 @@ class Dijkstra:
 
 
 if __name__ == "__main__":
-    M = np.array(
-        [
-            [INF, 2, 3, INF, INF, INF, INF],
-            [INF, INF, INF, INF, INF, 10, INF],
-            [INF, 3, INF, INF, INF, INF, INF],
-            [INF, INF, INF, INF, INF, INF, INF],
-            [INF, INF, 2, 5, INF, INF, 1],
-            [INF, INF, 4, 7, 3, INF, 5],
-            [INF, INF, INF, 1, INF, INF, INF],
-        ]
-    )
-    node = 0
-
-    obj = Dijkstra(M, node)
-    obj.calc()
-    print(obj)
-    obj.draw()
+    print("Try : python3 dijkstra_test.py --help ")
