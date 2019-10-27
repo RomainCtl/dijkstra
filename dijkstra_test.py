@@ -5,6 +5,7 @@ from random import randint
 
 from dijkstra import Dijkstra
 
+# liste de matrices de test
 MATRICES = [
     np.array(
         [
@@ -83,6 +84,7 @@ class Dijkstra_test:
             obj.draw()  # afficher le graphe et le résulat sur une interface graphique
 
     def generate_random(self, max_int=10):
+        # générer une matrice directionnel aléatoire
         s = randint(2, 8)
         attr = [np.nan] + list(range(1,max_int))
         max_int -= 1
