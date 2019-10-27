@@ -14,7 +14,7 @@ class Dijkstra:
     pred: list
 
     def __init__(self, M, node):
-        M[M == None] = INF
+        M[np.isnan(M)] = INF
         self.M = M.astype(int)
         self.node = node
         self.dist = list()
@@ -64,7 +64,6 @@ class Dijkstra:
             else:
                 self.pred[i] = -1
 
-        self.dist[self.node] = 0
         _dist = self.dist[:]  # copy of dist
         self.pred[self.node] = -1
 

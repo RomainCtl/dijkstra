@@ -8,44 +8,44 @@ from dijkstra import Dijkstra
 MATRICES = [
     np.array(
         [
-            [None, 2, 3, None, None, None, None],
-            [None, None, None, None, None, 10, None],
-            [None, 3, None, None, None, None, None],
-            [None, None, None, None, None, None, None],
-            [None, None, 2, 5, None, None, 1],
-            [None, None, 4, 7, 3, None, 5],
-            [None, None, None, 1, None, None, None],
+            [np.nan, 2, 3, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, np.nan, np.nan, np.nan, 10, np.nan],
+            [np.nan, 3, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, 2, 5, np.nan, np.nan, 1],
+            [np.nan, np.nan, 4, 7, 3, np.nan, 5],
+            [np.nan, np.nan, np.nan, 1, np.nan, np.nan, np.nan],
         ]
     ),
     np.array(
         [
-            [None, 1, 3, None],
-            [None, 2, None, None],
-            [None, 1, None, 4],
-            [None, None, 4, None],
+            [np.nan, 1, 3, np.nan],
+            [np.nan, 2, np.nan, np.nan],
+            [np.nan, 1, np.nan, 4],
+            [np.nan, np.nan, 4, np.nan],
         ]
     ),
     np.array(
         [
-            [None, 2, 6, None, None, 10],
-            [None, None, 4, None, 3, None],
-            [None, None, None, 6, None, None],
-            [None, None, None, None, 1, None],
-            [None, None, 5, None, None, None],
-            [None, 3, None, None, 1, None],
+            [np.nan, 2, 6, np.nan, np.nan, 10],
+            [np.nan, np.nan, 4, np.nan, 3, np.nan],
+            [np.nan, np.nan, np.nan, 6, np.nan, np.nan],
+            [np.nan, np.nan, np.nan, np.nan, 1, np.nan],
+            [np.nan, np.nan, 5, np.nan, np.nan, np.nan],
+            [np.nan, 3, np.nan, np.nan, 1, np.nan],
         ]
     ),
-    np.array([[None, None, None], [1, None, 2], [3, None, None]]),
+    np.array([[np.nan, np.nan, np.nan], [1, np.nan, 2], [3, np.nan, np.nan]]),
     np.array(
         [
-            [None, 1, None, 3, 4, None, None, 9],
-            [None, None, None, None, 1, None, 3, 4],
-            [2, None, None, 5, None, None, 6, None],
-            [None, None, None, None, 1, None, None, None],
-            [None, None, None, None, None, None, 4, 2],
-            [None, None, 7, None, None, None, None, None],
-            [6, None, None, None, None, 6, None, 8],
-            [None, None, None, 9, None, None, None, None],
+            [np.nan, 1, np.nan, 3, 4, np.nan, np.nan, 9],
+            [np.nan, np.nan, np.nan, np.nan, 1, np.nan, 3, 4],
+            [2, np.nan, np.nan, 5, np.nan, np.nan, 6, np.nan],
+            [np.nan, np.nan, np.nan, np.nan, 1, np.nan, np.nan, np.nan],
+            [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 4, 2],
+            [np.nan, np.nan, 7, np.nan, np.nan, np.nan, np.nan, np.nan],
+            [6, np.nan, np.nan, np.nan, np.nan, 6, np.nan, 8],
+            [np.nan, np.nan, np.nan, 9, np.nan, np.nan, np.nan, np.nan],
         ]
     ),
 ]
@@ -72,7 +72,7 @@ class Dijkstra_test:
         else:
             M = self.generate_random()
 
-        print(f"Matrice {mat if not random else 'aléatoire'} (None = pas de chemin): \n", M, "\n")
+        print(f"Matrice {mat if not random else 'aléatoire'} (nan = pas de chemin): \n", M, "\n")
 
         obj = Dijkstra(M, node)
         obj.calc()
@@ -84,7 +84,7 @@ class Dijkstra_test:
 
     def generate_random(self, max_int=10):
         s = randint(2, 8)
-        attr = [None] + list(range(1,max_int))
+        attr = [np.nan] + list(range(1,max_int))
         max_int -= 1
         perc = [0.6] + [0.4/max_int] * max_int
         return np.random.choice(attr, size=(s,s), p=perc)
