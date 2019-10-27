@@ -113,7 +113,7 @@ def main():
         "--draw",
         dest="draw",
         action="store_true",
-        help="Afficher l'interface graphique (graphe et résultat de l'algorithle de Dijkstra)",
+        help="Afficher l'interface graphique (graphe et résultat de l'algorithme de Dijkstra)",
     )
     parser.add_argument(
         "-r",

@@ -24,6 +24,6 @@ optional arguments:
                         Un entier identifiant de la matrice à utiliser
   -n NODE, --node NODE  Sommet de départ de la matrice choisie
   -d, --draw            Afficher l'interface graphique (graphe et résultat de
-                        l'algorithle de Dijkstra)
+                        l'algorithme de Dijkstra)
   -r, --random          Générer une matrice aléatoire à utiliser
 ```
